@@ -153,8 +153,9 @@ public static class Aquadat2Login
             if (!TryParseSamlResponseForm(html, out var acsUrl, out var samlResponse, out var relayState))
             {
                 var err = ExtractAdfsError(html);
-                return Fail(http, "เข้าสู่ระบบไม่สำเร็จ: " + (err ?? "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง") +
-                                  " (ระวัง: กรอกผิดหลายครั้งบัญชี AD จะถูกล็อก)");
+                return Fail(http, "เข้าสู่ระบบไม่สำเร็จ: รหัสพนักงานหรือรหัสผ่าน AD ไม่ถูกต้อง" +
+                                  (err != null ? $" (ADFS: {err})" : "") +
+                                  "\nระวัง: กรอกผิดหลายครั้งบัญชี AD จะถูกล็อก");
             }
 
             // [4] ACS → 200 + token ครั้งเดียวฝังอยู่ใน body (ไม่ใช่ redirect)

@@ -611,7 +611,7 @@ public sealed class SidecarController
             var (session, msg) = await Aquadat2Login.LoginAsync(Cfg.Aquadat2BaseUrl, Cfg.Aquadat2Domain, user, password);
             _aq2 = session;
             Changed?.Invoke();
-            return (session != null, session != null ? $"เข้าสู่ระบบแล้ว (Aquadat2 · {session.User})" : msg);
+            return (session != null, session != null ? $"เข้าสู่ระบบแล้ว (บัญชี AD {session.User})" : msg);
         }
         var res = await AquadatLogin.LoginAsync(Cfg.AquadatEnrollUrl, user, password);
         AqToken = res.Ok ? res.Token : "";

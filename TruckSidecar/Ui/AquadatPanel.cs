@@ -40,12 +40,23 @@ internal sealed class AquadatPanel
 
         // ── login ──
         var login = new StackPanel();
-        login.Children.Add(Kit.Header(c.AqSystemName));
-        login.Children.Add(Kit.T("รหัสผ่านใช้ครั้งเดียวต่อการเข้าสู่ระบบ ไม่ถูกบันทึกลงเครื่อง", 11.5, null, "Muted", new Thickness(2, -4, 0, c.Cfg.UseAquadat2 ? 2 : 10)));
         if (c.Cfg.UseAquadat2)
-            login.Children.Add(Kit.T("บัญชี AD: รหัสพนักงาน + รหัสผ่านเข้าคอมพิวเตอร์\n" +
-                                     "กรอกรหัสผิดหลายครั้ง บัญชี AD จะถูกล็อก", 11, null, "Orange", new Thickness(2, 0, 0, 10)));
-        _loginFields.Children.Add(Kit.Two(Kit.Labeled("ชื่อผู้ใช้", _user), Kit.Labeled("รหัสผ่าน", _pass)));
+        {
+            // Aquadat2 ใช้บัญชี AD ของ กปน. (ไม่ใช่ user/รหัส Aquadat เดิม) — บอกให้ชัดว่ากรอกอะไร
+            login.Children.Add(Kit.Header("เข้าสู่ระบบด้วยบัญชี AD", Kit.T("ส่งยอดเข้า Aquadat2", 11.5, null, "Muted")));
+            login.Children.Add(Kit.T("ใช้รหัสพนักงาน + รหัสผ่านชุดเดียวกับที่ใช้เข้าคอมพิวเตอร์ กปน.\n" +
+                                     "(ไม่ใช่รหัส Aquadat เดิม) · รหัสผ่านไม่ถูกบันทึกลงเครื่อง",
+                                     11.5, null, "Muted", new Thickness(2, -4, 0, 2)));
+            login.Children.Add(Kit.T("กรอกรหัสผ่านผิดหลายครั้ง บัญชี AD จะถูกล็อก (เข้าคอมพิวเตอร์ไม่ได้ด้วย)",
+                                     11, null, "Orange", new Thickness(2, 0, 0, 10)));
+            _loginFields.Children.Add(Kit.Two(Kit.Labeled("รหัสพนักงาน", _user), Kit.Labeled("รหัสผ่าน AD", _pass)));
+        }
+        else
+        {
+            login.Children.Add(Kit.Header("Aquadat"));
+            login.Children.Add(Kit.T("รหัสผ่านใช้ครั้งเดียวต่อการเข้าสู่ระบบ ไม่ถูกบันทึกลงเครื่อง", 11.5, null, "Muted", new Thickness(2, -4, 0, 10)));
+            _loginFields.Children.Add(Kit.Two(Kit.Labeled("ชื่อผู้ใช้", _user), Kit.Labeled("รหัสผ่าน", _pass)));
+        }
         login.Children.Add(_loginFields);
         _pass.KeyDown += (_, e) => { if (e.Key == Key.Enter) { e.Handled = true; Login(); } };
         _btnLogin.Click += (_, _) => Login();
@@ -116,7 +127,7 @@ internal sealed class AquadatPanel
     public void Refresh()
     {
         bool loggedIn = _c.AqLoggedIn;
-        _btnLogin.Content = loggedIn ? "เข้าสู่ระบบใหม่" : $"เข้าสู่ระบบ {_c.AqSystemName}";
+        _btnLogin.Content = loggedIn ? "เข้าสู่ระบบใหม่" : _c.Cfg.UseAquadat2 ? "เข้าสู่ระบบด้วยบัญชี AD" : "เข้าสู่ระบบ Aquadat";
         _loginFields.Visibility = loggedIn ? Visibility.Collapsed : Visibility.Visible;
         if (!loggedIn && _status.Text.StartsWith("เข้าสู่ระบบแล้ว")) { _status.Text = "หมดเวลาเข้าสู่ระบบ — กรุณาเข้าสู่ระบบใหม่"; _status.Foreground = Kit.B("Orange"); }
         _status.Visibility = _status.Text.Length == 0 ? Visibility.Collapsed : Visibility.Visible;
@@ -217,7 +228,7 @@ internal sealed class AquadatPanel
             var btn = new Button
             {
                 Style = Kit.S("PrimaryButton"), Margin = new Thickness(0, 6, 0, 0),
-                Content = loggedIn ? $"ยืนยันและส่งยอดวันที่ {cut.Day:dd/MM}" : $"เข้าสู่ระบบ {_c.AqSystemName} ก่อนยืนยัน",
+                Content = loggedIn ? $"ยืนยันและส่งยอดวันที่ {cut.Day:dd/MM}" : _c.Cfg.UseAquadat2 ? "เข้าสู่ระบบด้วยบัญชี AD ก่อนยืนยัน" : "เข้าสู่ระบบ Aquadat ก่อนยืนยัน",
                 IsEnabled = loggedIn && !_c.Pushing && cut.Configs.Count > 0,
             };
             System.Windows.Automation.AutomationProperties.SetName(btn, $"ยืนยัน {cut.Key}");

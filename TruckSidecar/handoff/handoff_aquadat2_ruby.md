@@ -12,6 +12,9 @@
 - Publish Release (x86 single-file) แล้วคัดลอก `TruckSidecar.exe`, `.pdb`, `config.json` ไปที่
   `Sidecar_prj\Sidecar_prj_deploy\TruckSidecar\` (`data\` เดิมไม่ถูกแตะ)
 - ของเดิมสำรองไว้ที่ `Sidecar_prj\_backup\deploy_TruckSidecar_20261123-121619_pre_aquadat2\` (rollback = คัดลอก 3 ไฟล์นี้กลับ)
+- Deploy รอบ 2 (12:30): คำหน้าจอแท็บส่งยอดเป็น "เข้าสู่ระบบด้วยบัญชี AD / รหัสพนักงาน / รหัสผ่าน AD"
+  (ตั้ง `aquadatApi: 1` คำจะกลับเป็นแบบเดิม — ต้องเปิดโปรแกรมใหม่) build รอบแรกสำรองที่ `_backup\deploy_TruckSidecar_20261123-123051_pre_adwording\`
+- รายงานสรุปสำหรับผู้บริหาร/ทีม: `TruckSidecar\docs\TruckSidecar_Aquadat2_Report_2026-11-23.docx`
 - โปรเจกต์อื่น (TruckLauncher / TruckWatchdog / Uroboros_mini) ไม่มีการเปลี่ยนแปลง ไม่ได้ re-publish
 - config.json ที่ deploy เดิม = master ทุกตัวอักษร จึงแทนที่ได้โดยไม่เสียค่าที่ปรับหน้างาน
 - ยังไม่ได้นำไปลงเครื่องโรงงาน (`D:\Sidecar_prj`) — ใช้ `deploy.ps1` บนเครื่องปลายทางตามปกติ
