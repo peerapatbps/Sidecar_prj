@@ -1,0 +1,22 @@
+{
+  "// truckExe": "โปรแกรมชั่งเดิม",
+  "truckExe": "D:\\TRUCK93A\\truck93a.exe",
+
+  "// sidecarExe": "โปรแกรม sidecar (ก็อป publish ไปวางที่ไหนก็ได้ แล้วชี้มาที่นี่)",
+  "sidecarExe": "..\\TruckSidecar\\TruckSidecar.exe",
+
+  "// sidecarProcess": "ชื่อ process ของ sidecar (ไม่ต้องใส่ .exe) ใช้กันเปิดซ้ำ",
+  "sidecarProcess": "TruckSidecar",
+
+  "// watchdogExe": "ตัวเฝ้าเปิด sidecar กลับถ้าหลุด (เว้นว่าง = ไม่ใช้ watchdog)",
+  "watchdogExe": "..\\TruckWatchdog\\TruckWatchdog.exe",
+
+  "// watchdogProcess": "ชื่อ process ของ watchdog (ไม่ต้องใส่ .exe) ใช้กันเปิดซ้ำ",
+  "watchdogProcess": "TruckWatchdog",
+
+  "// uroborosExe": "ตัวอัปโหลด chem.db ขึ้น Google Drive (เว้นว่าง = ไม่เปิด) — WinExe ไม่มี cmd โผล่ แต่ requireAdministrator จึงมี UAC เด้ง",
+  "uroborosExe": "..\\Uroboros_mini\\Uroboros.MiniUploader.exe",
+
+  "// uroborosProcess": "ชื่อ process ของ uroboros_mini (ไม่ต้องใส่ .exe) ใช้กันเปิดซ้ำ",
+  "uroborosProcess": "Uroboros.MiniUploader"
+}

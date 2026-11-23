@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <!-- v2: UI เป็น WPF (liquid glass) — v1 WinForms เก็บไว้ที่ _backup_v1 -->
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TruckSidecar</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <StartupObject>TruckSidecar.Program</StartupObject>
+    <!-- x86: รันได้ทั้ง Windows 32/64 บิต (เครื่องชั่งรุ่นเก่ามักเป็น 32 บิต) + Jet OLEDB มีแค่ 32 บิต -->
+    <PlatformTarget>x86</PlatformTarget>
+
+    <!-- dotnet publish -c Release -o publish → TruckSidecar.exe ไฟล์เดียว ไม่ต้องลง .NET ที่เครื่องโรงงาน -->
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="_backup_v1/**;mock/**;publish/**" />
+    <None Remove="_backup_v1/**;mock/**;publish/**" />
+    <Page Remove="_backup_v1/**;mock/**;publish/**" />
+    <None Update="config.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.OleDb" Version="9.0.*" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.*" />
+  </ItemGroup>
+
+</Project>

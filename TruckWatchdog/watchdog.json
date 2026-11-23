@@ -1,0 +1,21 @@
+{
+  // ชื่อ process ของโปรแกรมชั่งเดิม (ไม่ต้องใส่ .exe) — ทดสอบได้โดยเปลี่ยนเป็น "notepad"
+  "truckProcess": "truck93a",
+
+  // ชื่อ process ของ sidecar (ไม่ต้องใส่ .exe) ใช้เช็กว่ายังเปิดอยู่ไหม
+  "sidecarProcess": "TruckSidecar",
+
+  // path เต็มของ TruckSidecar.exe (ตัวเดียวกับที่ launcher ชี้ไป)
+  "sidecarExe": "..\\TruckSidecar\\TruckSidecar.exe",
+
+  // ธง "admin สั่งปิด": ปกติเว้นว่าง = watchdog จะอ่าน config.json ข้าง sidecar.exe เอง
+  // (คำนวณ dataDir แบบเดียวกับ sidecar แล้วต่อท้าย sidecar.stopped)
+  // ตั้งค่านี้เฉพาะเมื่อ dataDir เป็น path พิเศษที่คำนวณเองไม่ได้
+  "stopFlagPath": "",
+
+  // รอบการตรวจ (วินาที)
+  "pollSeconds": 5,
+
+  // ถ้าเปิด watchdog มาก่อนแล้ว truck93a ยังไม่ขึ้น ให้รอได้กี่วินาทีก่อนยอมแพ้แล้วจบตัวเอง
+  "startupGraceSeconds": 60
+}

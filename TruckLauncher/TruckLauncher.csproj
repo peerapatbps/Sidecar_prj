@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>TruckLauncher</AssemblyName>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>truck.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+
+    <!-- ให้หน้าตา/ข้อมูลไฟล์เหมือนโปรแกรมเดิมมากที่สุด -->
+    <Product>Truck Scale Software</Product>
+    <AssemblyTitle>Truck Scale Software</AssemblyTitle>
+    <FileDescription>Truck Scale Software</FileDescription>
+
+    <!-- x86 self-contained single exe: รันได้บนเครื่องโรงงานที่มีแต่ .NET x86 -->
+    <PlatformTarget>x86</PlatformTarget>
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="launcher.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

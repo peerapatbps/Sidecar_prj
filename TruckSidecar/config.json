@@ -1,0 +1,77 @@
+{
+  // ชื่อ process ของโปรแกรมเดิม (ไม่ต้องใส่ .exe) — ทดสอบได้โดยเปลี่ยนเป็น "notepad"
+  "targetProcess": "truck93a",
+
+  // ฐานข้อมูลของโปรแกรมชั่ง (อ่านจากสำเนาเท่านั้น ไม่เขียนกลับ) — ตรงกับ [Path] Data= ใน truck.ini
+  "mdbPath": "D:\\TRUCK93A\\data.mdb",
+  // v2: ตรวจเวลาแก้ไข data.mdb ทุก watchSeconds วิ (เปลี่ยน → ดึงรถคันล่าสุดมาเติมฟอร์ม)
+  //     + query บังคับทุก forceCheckSeconds วิ เผื่อเวลาไฟล์ไม่อัปเดตขณะโปรแกรมชั่งเปิดไฟล์ค้าง
+  "watchSeconds": 3,
+  "forceCheckSeconds": 30,
+  // กฎข้อ 2: ตรวจรถที่ชั่งเข้าแล้วยังไม่ออก (STAT 1) ย้อนหลังกี่ชั่วโมง — กรองด้วย DAYIN+TMIN
+  "inWindowHours": 24,
+  // งานคงค้าง: ดูรถที่ชั่งเข้าย้อนหลังกี่วัน (ชั่งออกแล้วแต่ไม่มีบันทึก / บันทึกไม่ครบ) และสรุปตัดยอดย้อนได้กี่วัน
+  "pendingLookbackDays": 7,
+  // WDATA.PRODUCT → แท็บ/ชุดถัง (01 อลูมิเนียมซัลเฟต, 03 PACl) รหัสอื่น (02 ทั่วไป) ไม่สนใจ
+  "productMap": { "01": "ALUM", "03": "PACL" },
+
+  "apiUrl": "http://172.16.198.150:443/api/chem/summary",
+  "apiPollSeconds": 300,
+
+  // เว้นว่าง = บันทึกในเครื่องอย่างเดียว ยังไม่ส่ง Central DB
+  "centralApiUrl": "",
+
+  // ── Aquadat (MWA GraphQL) ──
+  // sidecar คำนวณปริมาณเข้า (ตัน) แบบ interpolate เก็บลง outbox (data/aquadat_outbox.db)
+  // แล้วส่งเป็น "ยอดตัดรายวัน" (time 24:00) เมื่อผู้ใช้ login แล้วกดปุ่ม "ส่ง Chemical income"
+  // aquadatUsername = เติมไว้ล่วงหน้าในช่องชื่อผู้ใช้ (รหัสผ่านผู้ใช้กรอกเองทุกครั้ง ไม่บันทึกลงดิสก์)
+  "aquadatUrl": "https://aquadat.mwa.co.th/graphql",
+  "aquadatEnrollUrl": "http://aquadat.mwa.co.th:12007/api/aquaDATService/Enroll",
+  "aquadatUsername": "00102616",
+  "aquadatPushSeconds": 120,
+
+  // relative = อยู่ข้าง TruckSidecar.exe
+  "dataDir": "data",
+
+  // พื้นหลังกระจก: "blur" (ลื่นสุดบน Win10), "acrylic" (สวยกว่า แต่ Win10 หน่วงตอนย้ายหน้าต่าง), "off" (ทึบ)
+  "glass": "blur",
+  "sidecarWidth": 400,
+  "lowLevelPercent": 20,
+
+  // ── คาดการณ์ระดับถัง ──
+  // อัตราใช้ = เฉลี่ยจากทุกช่วงที่ระดับลดลงขณะถัง ON ภายใน rateWindowHours ชม. (ข้อมูล API ราย 2 ชม.)
+  // ถ้าประวัติยังไม่พอ (เช่นเพิ่งติดตั้ง) ใช้ defaultUsagePerHour = ยอดใช้ทั้งระบบ m³/ชม. (แบ่งตามจำนวนถังที่ ON)
+  //   ค่าตั้งต้นประมาณจากยอดรับ WDATA 180 วัน: ALUM ~39 ตัน/วัน ÷ SG 1.3 ≈ 1.25 m³/ชม.
+  //                                            PACL ~22 ตัน/วัน ÷ SG 1.2 ≈ 0.75 m³/ชม.  (ปรับตามจริงได้)
+  "rateWindowHours": 24,
+  "defaultUsagePerHour": { "ALUM": 1.25, "PACL": 1.0 },
+
+  // ── อัตราจ่ายสารจริง (ใช้ก่อนค่าเฉลี่ยประวัติและ defaultUsagePerHour) ──
+  // configID อัตราจ่ายโดยตรง (Alum 87/90/149/152, PACl 8401/8403/8415/8417) ยังไม่มีใน API
+  // จึงคำนวณแบบ BellBeast CHEMview.js: L/ชม. = flow(m³/s) × dose(mg/L) × factor
+  //   flow = Aq[id] ÷ divisor  (Ph1-2 เป็น m³/s, Ph3-4 เป็น m³/h → ÷3600)
+  // ถังที่ "phases" เหมือนกันใช้ถังร่วม: อัตรารวมของเฟสในกลุ่มแบ่งเท่าๆ กันให้ถังที่ ON
+  "phaseFlow": [
+    { "phase": 1, "id": 1,  "divisor": 1 },
+    { "phase": 2, "id": 2,  "divisor": 1 },
+    { "phase": 3, "id": 39, "divisor": 3600 },
+    { "phase": 4, "id": 40, "divisor": 3600 }
+  ],
+  "dosing": {
+    "ALUM": { "factor": 5.4135, "doseIds": { "1": 89,   "2": 92,   "3": 151,  "4": 154 } },
+    "PACL": { "factor": 8.6434, "doseIds": { "1": 8402, "2": 8404, "3": 8416, "4": 8418 } }
+  },
+
+  // incomeConfigId = configparam_id ปลายทางใน Aquadat (จับคู่ถังตามที่ระบบรวมค่า)
+  //   Alum A+B = 8037, Alum C+D = 8036, PACL A+B = 8423, PACL C+D = 8424
+  "tanks": [
+    { "name": "Alum A", "chemical": "ALUM", "levelId": 93,   "statusId": 95,   "capacity": 750, "incomeConfigId": 8037, "phases": [1, 2] },
+    { "name": "Alum B", "chemical": "ALUM", "levelId": 96,   "statusId": 98,   "capacity": 750, "incomeConfigId": 8037, "phases": [1, 2] },
+    { "name": "Alum C", "chemical": "ALUM", "levelId": 155,  "statusId": 157,  "capacity": 750, "incomeConfigId": 8036, "phases": [3, 4] },
+    { "name": "Alum D", "chemical": "ALUM", "levelId": 158,  "statusId": 160,  "capacity": 750, "incomeConfigId": 8036, "phases": [3, 4] },
+    { "name": "PACL A", "chemical": "PACL", "levelId": 8405, "statusId": 8406, "capacity": 25, "incomeConfigId": 8423, "phases": [1, 2] },
+    { "name": "PACL B", "chemical": "PACL", "levelId": 8407, "statusId": 8408, "capacity": 25, "incomeConfigId": 8423, "phases": [1, 2] },
+    { "name": "PACL C", "chemical": "PACL", "levelId": 8419, "statusId": 8420, "capacity": 25, "incomeConfigId": 8424, "phases": [3, 4] },
+    { "name": "PACL D", "chemical": "PACL", "levelId": 8421, "statusId": 8422, "capacity": 23, "incomeConfigId": 8424, "phases": [3, 4] }
+  ]
+}

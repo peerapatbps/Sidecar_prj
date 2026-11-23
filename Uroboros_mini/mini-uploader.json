@@ -1,0 +1,16 @@
+{
+  "DriveFolderId": "1hLIPn9qgjqm4WliNJGsEwmjq78oaXFgm",
+  "DriveRemoteChemFileName": "chem.db",
+  "ConfigFolderName": "config_",
+  "ConfigFileName": "config.ini",
+  "PollIntervalSeconds": 300,
+  "ScheduleWindowMinutes": 0,
+  "DailyTimes": [],
+  "StateFileName": "uploader-state.json",
+  "SidecarDb": "..\\TruckSidecar\\data\\sidecar.db",
+  "IotEnabled": true,
+  "IotServerUrl": "http://172.16.198.150:443",
+  "IotDeviceName": "truck weighing scale",
+  "IotDeviceType": "Computer",
+  "IotPollIntervalSeconds": 15
+}
