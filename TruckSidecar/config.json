@@ -21,7 +21,15 @@
   // เว้นว่าง = บันทึกในเครื่องอย่างเดียว ยังไม่ส่ง Central DB
   "centralApiUrl": "",
 
-  // ── Aquadat (MWA GraphQL) ──
+  // ── Aquadat2 (ระบบใหม่ — ค่าเริ่มต้น) ──
+  // aquadatApi: 2 = aquadat2 (login บัญชี AD ผ่าน ADFS SAML + ส่งยอด REST PTransJsonUpdate)
+  //             1 = aquadat เดิม (Enroll + GraphQL ด้านล่าง) — สำรองไว้จนกว่า กปน. ปิดระบบเดิม
+  // aquadat2Domain: เติมหน้าชื่อผู้ใช้ถ้ากรอกแค่รหัสพนักงาน (ADFS ต้องการ water.mwa\รหัส)
+  "aquadatApi": 2,
+  "aquadat2BaseUrl": "https://aquadat2.mwa.co.th",
+  "aquadat2Domain": "water.mwa",
+
+  // ── Aquadat เดิม (MWA GraphQL) — ใช้เมื่อ aquadatApi = 1 ──
   // sidecar คำนวณปริมาณเข้า (ตัน) แบบ interpolate เก็บลง outbox (data/aquadat_outbox.db)
   // แล้วส่งเป็น "ยอดตัดรายวัน" (time 24:00) เมื่อผู้ใช้ login แล้วกดปุ่ม "ส่ง Chemical income"
   // aquadatUsername = เติมไว้ล่วงหน้าในช่องชื่อผู้ใช้ (รหัสผ่านผู้ใช้กรอกเองทุกครั้ง ไม่บันทึกลงดิสก์)

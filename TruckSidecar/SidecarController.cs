@@ -55,8 +55,13 @@ public sealed class SidecarController
     readonly HashSet<string> _conflicts = new();
     bool _scanning, _pushing;
 
+    /// <summary>token ของ aquadat เดิม (v1) — ใช้เมื่อ config aquadatApi = 1</summary>
     public string AqToken { get; private set; } = "";
-    public bool AqLoggedIn => !string.IsNullOrWhiteSpace(AqToken);
+    /// <summary>เซสชัน aquadat2 (cookie + JWT + refresh token) — ใช้เมื่อ config aquadatApi = 2</summary>
+    Aquadat2Session? _aq2;
+    public bool AqLoggedIn => Cfg.UseAquadat2 ? _aq2 != null : !string.IsNullOrWhiteSpace(AqToken);
+    /// <summary>ชื่อระบบที่แสดงบน UI</summary>
+    public string AqSystemName => Cfg.UseAquadat2 ? "Aquadat2" : "Aquadat";
     public bool Pushing => _pushing;
 
     /// <summary>รถคันล่าสุด (max TICKET1) ปรากฏครั้งแรก → UI ตัดสินใจเติมฟอร์มหรือแสดงเป็นชิป</summary>
@@ -567,7 +572,9 @@ public sealed class SidecarController
         _pushing = true;
         try
         {
-            var body = await AquadatClient.PushAsync(_http, Cfg.AquadatUrl, AqToken, rows);
+            var body = Cfg.UseAquadat2
+                ? await Aquadat2Client.PushAsync(_aq2!, rows)
+                : await AquadatClient.PushAsync(_http, Cfg.AquadatUrl, AqToken, rows);
             Outbox.SaveConfirm(cut.Key, cut.Sig, body);
             Store.Audit("daycut-confirm", new
             {
@@ -577,10 +584,15 @@ public sealed class SidecarController
             });
             return (rows.Count, null);
         }
+        catch (Aquadat2AuthException ex)
+        {
+            AqLogout();                        // refresh ไม่ได้แล้ว → ให้ login ใหม่
+            return (0, ex.Message);
+        }
         catch (Exception ex)
         {
             // token อาจหมดอายุ → ให้ login ใหม่
-            if (ex.Message.Contains("401") || ex.Message.Contains("token", StringComparison.OrdinalIgnoreCase)) AqToken = "";
+            if (!Cfg.UseAquadat2 && (ex.Message.Contains("401") || ex.Message.Contains("token", StringComparison.OrdinalIgnoreCase))) AqToken = "";
             return (0, ex.Message);
         }
         finally
@@ -593,9 +605,26 @@ public sealed class SidecarController
     /// <summary>login แบบผู้ใช้กรอกเอง (POST ครั้งเดียว) — token อยู่ในหน่วยความจำเท่านั้น</summary>
     public async Task<(bool Ok, string Message)> AqLoginAsync(string user, string password)
     {
+        if (Cfg.UseAquadat2)
+        {
+            AqLogout();
+            var (session, msg) = await Aquadat2Login.LoginAsync(Cfg.Aquadat2BaseUrl, Cfg.Aquadat2Domain, user, password);
+            _aq2 = session;
+            Changed?.Invoke();
+            return (session != null, session != null ? $"เข้าสู่ระบบแล้ว (Aquadat2 · {session.User})" : msg);
+        }
         var res = await AquadatLogin.LoginAsync(Cfg.AquadatEnrollUrl, user, password);
         AqToken = res.Ok ? res.Token : "";
         Changed?.Invoke();
         return (res.Ok, res.Ok ? $"เข้าสู่ระบบแล้ว ({user})" : res.Message);
+    }
+
+    /// <summary>ทิ้ง token/เซสชันในหน่วยความจำ (ไม่มีอะไรบันทึกลงดิสก์)</summary>
+    public void AqLogout()
+    {
+        AqToken = "";
+        var s = _aq2;
+        _aq2 = null;
+        s?.Dispose();
     }
 }

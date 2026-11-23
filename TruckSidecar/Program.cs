@@ -17,6 +17,13 @@ static class Program
             return;
         }
 
+        // --aq2test <baseUrl localhost> <user> <pass> <out.txt> : login ADFS SAML + ส่งยอดตัวอย่าง กับ stub ในเครื่องเท่านั้น (mock\aquadat-stub.ps1)
+        if (args.Length >= 5 && args[0] == "--aq2test")
+        {
+            Aq2StubTest.Run(cfg, args[1], args[2], args[3], args[4]).GetAwaiter().GetResult();
+            return;
+        }
+
         // --cctest out.txt <TICKET1 ALUM ที่ยังไม่มีบันทึก> : ทดสอบ crosscheck กฎข้อ 5 กับ mdb ตาม config
         if (args.Length >= 3 && args[0] == "--cctest")
         {

@@ -49,6 +49,12 @@ public sealed class AppConfig
     public string ApiUrl { get; set; } = "";
     public int ApiPollSeconds { get; set; } = 300;
     public string CentralApiUrl { get; set; } = "";
+    /// <summary>เวอร์ชันระบบ Aquadat ที่ใช้ส่งยอด: 2 = aquadat2 (ADFS SAML + REST, ค่าเริ่มต้น), 1 = aquadat เดิม (Enroll + GraphQL)</summary>
+    public int AquadatApi { get; set; } = 2;
+    public string Aquadat2BaseUrl { get; set; } = "https://aquadat2.mwa.co.th";
+    /// <summary>โดเมน AD ที่เติมหน้าชื่อผู้ใช้ถ้ากรอกแค่รหัสพนักงาน (ADFS ไม่รับชื่อไม่มีโดเมน)</summary>
+    public string Aquadat2Domain { get; set; } = "water.mwa";
+    public bool UseAquadat2 => AquadatApi >= 2;
     public string AquadatUrl { get; set; } = "https://aquadat.mwa.co.th/graphql";
     public string AquadatEnrollUrl { get; set; } = "http://aquadat.mwa.co.th:12007/api/aquaDATService/Enroll";
     public string AquadatUsername { get; set; } = "";

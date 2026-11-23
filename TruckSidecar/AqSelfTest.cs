@@ -25,7 +25,9 @@ public static class AqSelfTest
             }).ToList();
             double sum = byCfg.Values.Sum();
             W($"   รวมตามคอนฟิก: {string.Join(", ", byCfg.Select(kv => $"{kv.Key}={kv.Value}"))}  (รวม {sum:0.###} ตัน)");
-            W("   payload: " + BuildPayload(rows));
+            W(cfg.UseAquadat2
+                ? $"   payload (Aquadat2 POST {Aquadat2Session.ApiBackend}{Aquadat2Client.Route}): " + Aquadat2Client.BuildPayload(rows)
+                : "   payload (Aquadat GraphQL): " + BuildPayload(rows));
             W("");
         }
 
